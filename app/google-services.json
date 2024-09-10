@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "736115158755",
+    "project_id": "control-lma-33fd1",
+    "storage_bucket": "control-lma-33fd1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736115158755:android:edeb2c87d22165c4619fd6",
+        "android_client_info": {
+          "package_name": "com.controllma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3vbCtBpDv-zRCV_JC53iCHHa26Dy8jSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
