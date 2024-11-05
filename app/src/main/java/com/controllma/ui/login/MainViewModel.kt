@@ -7,7 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.controllma.data.model.LoginResponse
+import com.controllma.data.model.UserResponse
+import com.controllma.domain.DoLogOutUseCase
 import com.controllma.domain.DoLoginUserCase
+import com.controllma.domain.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,8 +18,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val loginUseCase: DoLoginUserCase
+class MainViewModel @Inject constructor(
+    private val loginUseCase: DoLoginUserCase,
+    private val getUserUseCase: GetUserUseCase,
+    private val logoutUseCase: DoLogOutUseCase
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
@@ -52,4 +57,18 @@ class LoginViewModel @Inject constructor(
 
     private fun enableLogin(email: String, pass: String) =
         Patterns.EMAIL_ADDRESS.matcher(email).matches() && pass.length > 8
+
+    fun getUserInf(userModel: (UserResponse?) -> Unit) {
+        viewModelScope.launch {
+            val res = getUserUseCase.invoke()
+            userModel(res)
+        }
+    }
+
+    fun logOut(response: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            logoutUseCase.invoke()
+            response(true)
+        }
+    }
 }

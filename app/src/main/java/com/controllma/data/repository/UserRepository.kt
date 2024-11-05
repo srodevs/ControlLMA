@@ -2,11 +2,14 @@ package com.controllma.data.repository
 
 import com.controllma.data.model.LoginResponse
 import com.controllma.data.model.TypeLoginResponse
+import com.controllma.data.model.UserResponse
 import com.controllma.data.service.FirebaseAuthService
+import com.controllma.data.service.FirebaseDbService
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
-    private val firebaseAuth: FirebaseAuthService
+    private val firebaseAuth: FirebaseAuthService,
+    private val firebaseDbService: FirebaseDbService
 ) {
 
     suspend fun login(email: String, password: String): LoginResponse {
@@ -20,4 +23,13 @@ class UserRepository @Inject constructor(
             return LoginResponse(loginStatus = TypeLoginResponse.Fail)
         }
     }
+
+    fun logOut() {
+        firebaseAuth.logOut()
+    }
+
+    suspend fun getUserInf(): UserResponse? {
+        return firebaseDbService.getUserInf(firebaseAuth.getCurrentUser().toString())
+    }
+
 }

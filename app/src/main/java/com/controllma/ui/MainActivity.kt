@@ -34,8 +34,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.controllma.core.StorageUser
 import com.controllma.ui.core.theme.ControlLMATheme
-import com.controllma.ui.login.LoginViewModel
 import com.controllma.ui.login.MainLoginView
+import com.controllma.ui.login.MainViewModel
 import com.controllma.ui.main.MainHomeView
 import com.controllma.ui.main.MainProfileView
 import com.controllma.ui.navigation.NavRoute
@@ -43,7 +43,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val loginViewModel: LoginViewModel by viewModels()
+    private val loginViewModel: MainViewModel by viewModels()
     private val userInf: StorageUser = StorageUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {

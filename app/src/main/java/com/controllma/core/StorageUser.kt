@@ -11,6 +11,8 @@ class StorageUser {
     companion object {
         val USER_LOGIN = booleanPreferencesKey("userIsLogin")
         private val USER_EMAIL = stringPreferencesKey("email")
+        private val USER_UUID = stringPreferencesKey("uuid")
+        private val USER_TYPE = stringPreferencesKey("typeUser")
         private val USER_NAME = stringPreferencesKey("username")
         private val USER_IMG = stringPreferencesKey("userImage")
         private val USER_FCM_TOKEN = stringPreferencesKey("deviceToken")
@@ -19,19 +21,23 @@ class StorageUser {
     private val context = ControlLMAApp.mAppContext
 
     suspend fun saveUserInfo(
-        isLogin: Boolean,
-        loginId: String,
+        uuid: String,
         email: String,
         username: String,
-        userImage: String
+        userImage: String,
+        tokenFcm: String
     ) {
         context.xDataStorageUser.edit {
-            it[USER_LOGIN] = isLogin
+            it[USER_UUID] = uuid
             it[USER_EMAIL] = email
             it[USER_NAME] = username
             it[USER_IMG] = userImage
+            it[USER_FCM_TOKEN] = tokenFcm
         }
+    }
 
+    fun getUserType() = context.xDataStorageUser.data.map {
+        it[USER_TYPE].orEmpty()
     }
 
     suspend fun saveLoginBool(isLogin: Boolean) {

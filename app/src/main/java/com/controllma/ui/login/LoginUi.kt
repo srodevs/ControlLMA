@@ -1,6 +1,7 @@
 package com.controllma.ui.login
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,17 +34,18 @@ import com.controllma.data.model.TypeLoginResponse
 import com.controllma.ui.navigation.NavRoute
 import kotlinx.coroutines.launch
 
+const val TAG_MAIN_VM = "mainVm"
+
 @Composable
 fun MainLoginView(
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel,
+    loginViewModel: MainViewModel,
     navigationControl: NavHostController,
-    userInf: StorageUser
+    userStorageInf: StorageUser
 ) {
-
-
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     val email by loginViewModel.email.collectAsState()
     val pass by loginViewModel.pass.collectAsState()
@@ -116,15 +119,33 @@ fun MainLoginView(
                     loginViewModel.onLoginSelected {
                         when (it.loginStatus) {
                             TypeLoginResponse.Success -> {
-                                Log.d("main", "debe de cambiar de pantalla")
-                                scope.launch {
-                                    userInf.saveLoginBool(true)
+                                Log.d(TAG_MAIN_VM, "debe de cambiar de pantalla")
+                                loginViewModel.getUserInf { user ->
+                                    Log.e(TAG_MAIN_VM, "mi response user es -> $user")
+                                    if (user != null) {
+                                        scope.launch {
+                                            userStorageInf.saveLoginBool(true)
+                                            userStorageInf.saveUserInfo(
+                                                uuid = user.uuid.toString(),
+                                                email = user.email.toString(),
+                                                username = user.username.toString(),
+                                                userImage = user.userImage.toString(),
+                                                tokenFcm = user.deviceToken.toString()
+                                            )
+                                        }
+                                        navigationControl.navigate(NavRoute.NavMainHome.route)
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Al parecer tu informacion de empleado esta incompleta",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
                                 }
-                                navigationControl.navigate(NavRoute.DataNavMain.route)
                             }
 
                             TypeLoginResponse.Incorrect, TypeLoginResponse.Fail -> {
-                                Log.d("main", "a salido un error ")
+                                Log.d(TAG_MAIN_VM, "a salido un error ")
                                 scope.launch {
                                     snackBarHostState.showSnackbar("Error: ${it.loginStatus}")
                                 }

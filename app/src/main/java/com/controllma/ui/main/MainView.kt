@@ -42,7 +42,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.controllma.R
 import com.controllma.core.StorageUser
-import com.controllma.ui.login.LoginViewModel
+import com.controllma.ui.login.MainViewModel
 import com.controllma.ui.navigation.NavRoute
 import kotlinx.coroutines.launch
 
@@ -56,7 +56,7 @@ fun MainHomeView(navigationControl: NavHostController) {
 @Composable
 fun MainProfileView(
     navigationControl: NavHostController,
-    viewModel: LoginViewModel,
+    viewModel: MainViewModel,
     storageUser: StorageUser
 ) {
     val myImgUrl by rememberSaveable {
