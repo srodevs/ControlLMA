@@ -1,14 +1,10 @@
 package com.controllma.core
 
-import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.controllma.ControlLMAApp
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class StorageUser {
 
@@ -38,17 +34,14 @@ class StorageUser {
 
     }
 
-    suspend fun saveLoginBool(
-        isLogin: Boolean,
-    ) {
+    suspend fun saveLoginBool(isLogin: Boolean) {
         context.xDataStorageUser.edit {
             it[USER_LOGIN] = isLogin
         }
     }
 
-
     fun getLogin() = context.xDataStorageUser.data.map {
-        it[StorageUser.USER_LOGIN] ?: false
+        it[USER_LOGIN] ?: false
     }
 
 }

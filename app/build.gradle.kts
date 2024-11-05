@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.controllma"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.controllma"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -98,4 +98,12 @@ dependencies {
     //hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-compiler:2.51.1")
+
+    //loadImg
+    implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc02")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc02")
+
+    // Kotlin
+    implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
+
 }

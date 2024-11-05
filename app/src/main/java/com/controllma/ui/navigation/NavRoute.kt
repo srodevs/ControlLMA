@@ -1,6 +1,7 @@
 package com.controllma.ui.navigation
 
 sealed class NavRoute(val route: String) {
-    data object DataNavLogin : NavRoute("screenLogin")
-    data object DataNavMain : NavRoute("screenMain")
+    data object NavLogin : NavRoute("screenLogin")
+    data object NavMainHome : NavRoute("screenMainHome")
+    data object NavMainProfile : NavRoute("screenMainProfile")
 }

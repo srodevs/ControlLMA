@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Control LMA</string>
 
+    <string name="all_description_img">Image</string>
+
     <string name="login_email">Correo electronico</string>
     <string name="login_pass">Contraseña</string>
     <string name="login_btn_login">Ingresar</string>

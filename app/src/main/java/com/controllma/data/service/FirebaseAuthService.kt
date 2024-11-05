@@ -36,4 +36,10 @@ class FirebaseAuthService @Inject constructor(
                 }
         }
     }
+
+    fun getCurrentUser() = firebaseAuth.currentUser?.uid
+
+    fun logOut() {
+        firebaseAuth.signOut()
+    }
 }
