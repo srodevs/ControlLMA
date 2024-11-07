@@ -129,6 +129,7 @@ fun MainLoginView(
                                                 uuid = user.uuid.toString(),
                                                 email = user.email.toString(),
                                                 username = user.username.toString(),
+                                                userType = user.typeUser.toString(),
                                                 userImage = user.userImage.toString(),
                                                 tokenFcm = user.deviceToken.toString()
                                             )
