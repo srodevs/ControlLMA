@@ -52,4 +52,8 @@ class StorageUser {
         it[USER_TYPE].orEmpty()
     }
 
+    fun getUserUuid() = context.xDataStorageUser.data.map {
+        it[USER_UUID].orEmpty()
+    }
+
 }

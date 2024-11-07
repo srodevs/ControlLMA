@@ -1,6 +1,7 @@
 package com.controllma.data.repository
 
 import com.controllma.data.model.LoginResponse
+import com.controllma.data.model.NewModel
 import com.controllma.data.model.NewResponse
 import com.controllma.data.model.TypeLoginResponse
 import com.controllma.data.model.UserResponse
@@ -36,6 +37,10 @@ class UserRepository @Inject constructor(
 
     fun getAllNews(): Flow<List<NewResponse>> {
         return firebaseDbService.getAllNews()
+    }
+
+    fun createNew(newResponse: NewModel): Boolean {
+        return firebaseDbService.creteNew(newResponse)
     }
 
 }

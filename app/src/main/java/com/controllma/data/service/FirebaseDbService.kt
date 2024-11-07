@@ -1,5 +1,6 @@
 package com.controllma.data.service
 
+import com.controllma.data.model.NewModel
 import com.controllma.data.model.NewResponse
 import com.controllma.data.model.UserResponse
 import com.google.firebase.database.FirebaseDatabase
@@ -31,5 +32,12 @@ class FirebaseDbService @Inject constructor(
                 it.getValue(NewResponse::class.java)
             }
         }
+    }
+
+    fun creteNew(newResponse: NewModel): Boolean {
+        val mId = firebaseDatabase.getReference(TABLE_NEWS).push().key.toString()
+        newResponse.newId = mId
+        return firebaseDatabase.getReference(TABLE_NEWS).child(mId)
+            .setValue(newResponse).isSuccessful
     }
 }

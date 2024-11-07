@@ -5,8 +5,10 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.controllma.data.model.LoginResponse
+import com.controllma.data.model.NewModel
 import com.controllma.data.model.NewResponse
 import com.controllma.data.model.UserResponse
+import com.controllma.domain.CreateNewUseCase
 import com.controllma.domain.DoLogOutUseCase
 import com.controllma.domain.DoLoginUserCase
 import com.controllma.domain.GetAllNewsUseCase
@@ -23,7 +25,8 @@ class MainViewModel @Inject constructor(
     private val loginUseCase: DoLoginUserCase,
     private val getUserUseCase: GetUserUseCase,
     private val logoutUseCase: DoLogOutUseCase,
-    private val getAllNewsUseCase: GetAllNewsUseCase
+    private val getAllNewsUseCase: GetAllNewsUseCase,
+    private val createNewUseCase: CreateNewUseCase
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
@@ -34,6 +37,11 @@ class MainViewModel @Inject constructor(
     val btnEnable = _btnEnable.asStateFlow()
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
+
+    private val _newTitle = MutableStateFlow("")
+    val newTitle = _newTitle.asStateFlow()
+    private val _newDescr = MutableStateFlow("")
+    val newDescr = _newDescr.asStateFlow()
 
     private var _newsList = MutableStateFlow<List<NewResponse>>(emptyList())
     val newsList: StateFlow<List<NewResponse>> = _newsList
@@ -86,6 +94,26 @@ class MainViewModel @Inject constructor(
                 _newsList.value = it
                 _loading.value = false
             }
+        }
+    }
+
+    fun onNewsChange(title: String, description: String) {
+        _newTitle.value = title
+        _newDescr.value = description
+    }
+
+    fun onPublish(uuId: String, res: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val new = NewModel(
+                title = newTitle.value,
+                description = newDescr.value,
+                timestamp = System.currentTimeMillis(),
+                newId = "",
+                urlImage = null,
+                publisher = uuId
+            )
+            val response = createNewUseCase.invoke(new)
+            res(true)
         }
     }
 

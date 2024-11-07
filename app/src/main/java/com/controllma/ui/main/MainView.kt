@@ -2,31 +2,47 @@ package com.controllma.ui.main
 
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.controllma.R
@@ -48,8 +64,16 @@ fun MainHomeView(
                 value = userType == "admin"
             }
         }
+        val miUuid by produceState(initialValue = "") {
+            storageUser.getUserType().collect { uuid ->
+                value = uuid
+            }
+        }
         val newList by viewModel.newsList.collectAsState(emptyList())
         val loading by viewModel.loading.collectAsState(false)
+        val title by viewModel.newTitle.collectAsState()
+        val description by viewModel.newDescr.collectAsState()
+        var showDialogCreate by rememberSaveable { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
         val (fabCreate, pg) = createRefs()
@@ -80,7 +104,7 @@ fun MainHomeView(
         if (isAdmin) {
             FloatingActionButton(
                 onClick = {
-
+                    showDialogCreate = !showDialogCreate
                 },
                 modifier = Modifier
                     .padding(12.dp)
@@ -91,6 +115,70 @@ fun MainHomeView(
             ) {
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "")
             }
+        }
+        if (showDialogCreate) {
+            Dialog(onDismissRequest = { showDialogCreate = false }) {
+                Card(shape = RoundedCornerShape(8)/*, elevation = 12.dp*/) {
+                    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                        TextField(
+                            value = title,
+                            onValueChange = {
+                                viewModel.onNewsChange(
+                                    title = it,
+                                    description = description
+                                )
+                            },
+                            label = { Text(text = stringResource(id = R.string.home_new_title)) },
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent
+                            ),
+                            singleLine = true,
+                            maxLines = 1,
+                            keyboardActions = KeyboardActions(onDone = {}),
+                            modifier = Modifier
+                                .padding(top = 20.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = description,
+                            onValueChange = {
+                                viewModel.onNewsChange(
+                                    title = title,
+                                    description = it
+                                )
+                            },
+                            label = { Text(text = stringResource(id = R.string.home_new_description)) },
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {}),
+                            modifier = Modifier
+                                .padding(top = 20.dp)
+                        )
+
+                        Button(
+                            onClick = {
+                                viewModel.onPublish(miUuid) {
+                                    if (it) {
+                                        showDialogCreate = false
+                                        Toast.makeText(context, "create", Toast.LENGTH_LONG).show()
+                                    } else {
+                                        Toast.makeText(context, "error", Toast.LENGTH_LONG).show()
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 40.dp, bottom = 20.dp)
+                        ) {
+                            Text(stringResource(R.string.home_new_btn_send))
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
@@ -135,63 +223,52 @@ fun TaskMenu(
     }
 }
 
+@Composable
+@Preview(showSystemUi = true)
+fun ShowExample() {
+    Dialog(onDismissRequest = { }) {
+        Card(shape = RoundedCornerShape(8)/*, elevation = 12.dp*/) {
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                TextField(
+                    value = "email",
+                    onValueChange = { /*loginViewModel.onLoginChange(it, pass)*/ },
+                    label = { Text(text = stringResource(id = R.string.home_new_title)) },
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent
+                    ),
+                    singleLine = true,
+                    maxLines = 1,
+                    keyboardActions = KeyboardActions(onDone = {}),
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
+                    value = "email",
+                    onValueChange = { /*loginViewModel.onLoginChange(it, pass)*/ },
+                    label = { Text(text = stringResource(id = R.string.home_new_description)) },
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent
+                    ),
+                    singleLine = true,
+                    maxLines = 1,
+                    keyboardActions = KeyboardActions(onDone = {}),
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                )
 
-fun getSuperHeroList(): List<SuperHeroModel> {
-    return listOf(
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "Marvlel",
-            R.drawable.logo_lma_transparent
-        ),
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "Teletubi",
-            R.drawable.logo_lma
-        ),
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "Teletubi",
-            R.drawable.ic_launcher_background
-        ),
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "Teletubi",
-            R.drawable.ic_launcher_foreground
-        ),
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "Marvlel",
-            R.drawable.ic_round_fingerprint
-        ),
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "DC",
-            R.drawable.ic_launcher_background
-        ),
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "DC",
-            R.drawable.ic_round_password
-        ),
-        SuperHeroModel(
-            superHeroName = "wolverine",
-            realHeroName = "Logan",
-            "DC",
-            R.drawable.ic_round_password
-        ),
-    )
+                Button(
+                    onClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 40.dp, bottom = 20.dp)
+                ) {
+                    Text(stringResource(R.string.home_new_btn_send))
+                }
+            }
+        }
+    }
+
 }
-
-data class SuperHeroModel(
-    var superHeroName: String,
-    var realHeroName: String,
-    var publsher: String,
-    @DrawableRes var photo: Int,
-)
