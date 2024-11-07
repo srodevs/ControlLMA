@@ -21,9 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,8 +52,15 @@ fun MainProfileView(
     viewModel: MainViewModel,
     storageUser: StorageUser
 ) {
-    val myImgUrl by rememberSaveable {
-        mutableStateOf("httzps://images.pexels.com/photos/29095597/pexels-photo-29095597/free-photo-of-misteriosa-figura-encapuchada-en-el-humo.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+    val myImgUrl by produceState(initialValue = "https://images.pexels.com/photos/29095597/pexels-photo-29095597/free-photo-of-misteriosa-figura-encapuchada-en-el-humo.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1") {
+        storageUser.getUserImage().collect { miUrl ->
+            value = miUrl
+        }
+    }
+    val myName by produceState(initialValue = "") {
+        storageUser.getUsername().collect { miName ->
+            value = miName
+        }
     }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -77,11 +84,11 @@ fun MainProfileView(
                 }
                 .constrainAs(ivIconMenu) {
                     top.linkTo(parent.top)
-                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
                 }
         )
 
-        DropdownMenu( // (3)
+        DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             modifier = Modifier.constrainAs(menuContainer) {
@@ -89,7 +96,7 @@ fun MainProfileView(
                 end.linkTo(parent.end)
             }
         ) {
-            DropdownMenuItem( // (4)
+            DropdownMenuItem(
                 onClick = {
                     viewModel.logOut {
                         if (it) {
@@ -134,7 +141,7 @@ fun MainProfileView(
         )
 
         Text(
-            text = "Hola mundo desde perfil",
+            text = "Hola $myName",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier

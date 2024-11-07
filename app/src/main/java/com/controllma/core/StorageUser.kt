@@ -56,4 +56,12 @@ class StorageUser {
         it[USER_UUID].orEmpty()
     }
 
+    fun getUsername() = context.xDataStorageUser.data.map {
+        it[USER_NAME].orEmpty()
+    }
+
+    fun getUserImage() = context.xDataStorageUser.data.map {
+        it[USER_IMG].orEmpty()
+    }
+
 }
