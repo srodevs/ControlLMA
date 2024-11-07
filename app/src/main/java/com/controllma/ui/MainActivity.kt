@@ -92,7 +92,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(NavRoute.NavMainHome.route) {
                                 MainHomeView(
-                                    navigationControl = navigationControl
+                                    navigationControl = navigationControl,
+                                    viewModel = loginViewModel,
+                                    storageUser = userInf
                                 )
                             }
                             composable(NavRoute.NavMainProfile.route) {

@@ -7,12 +7,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.controllma.data.model.LoginResponse
+import com.controllma.data.model.NewResponse
 import com.controllma.data.model.UserResponse
 import com.controllma.domain.DoLogOutUseCase
 import com.controllma.domain.DoLoginUserCase
+import com.controllma.domain.GetAllNewsUseCase
 import com.controllma.domain.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +24,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val loginUseCase: DoLoginUserCase,
     private val getUserUseCase: GetUserUseCase,
-    private val logoutUseCase: DoLogOutUseCase
+    private val logoutUseCase: DoLogOutUseCase,
+    private val getAllNewsUseCase: GetAllNewsUseCase
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
@@ -32,6 +36,9 @@ class MainViewModel @Inject constructor(
     val btnEnable = _btnEnable.asStateFlow()
     private val _loading = MutableLiveData(false)
     val loading: LiveData<Boolean> = _loading
+
+    private var _newsList = MutableStateFlow<List<NewResponse>>(emptyList())
+    val newsList: StateFlow<List<NewResponse>> = _newsList
 
     fun onLoginChange(email: String, pass: String) {
         _email.value = email
@@ -71,4 +78,13 @@ class MainViewModel @Inject constructor(
             response(true)
         }
     }
+
+    fun getAllNews() {
+        viewModelScope.launch {
+            getAllNewsUseCase().collect {
+                _newsList.value = it
+            }
+        }
+    }
+
 }

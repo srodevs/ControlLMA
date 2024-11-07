@@ -24,6 +24,7 @@ class StorageUser {
         uuid: String,
         email: String,
         username: String,
+        userType: String,
         userImage: String,
         tokenFcm: String
     ) {
@@ -31,13 +32,10 @@ class StorageUser {
             it[USER_UUID] = uuid
             it[USER_EMAIL] = email
             it[USER_NAME] = username
+            it[USER_TYPE] = userType
             it[USER_IMG] = userImage
             it[USER_FCM_TOKEN] = tokenFcm
         }
-    }
-
-    fun getUserType() = context.xDataStorageUser.data.map {
-        it[USER_TYPE].orEmpty()
     }
 
     suspend fun saveLoginBool(isLogin: Boolean) {
@@ -48,6 +46,10 @@ class StorageUser {
 
     fun getLogin() = context.xDataStorageUser.data.map {
         it[USER_LOGIN] ?: false
+    }
+
+    fun getUserType() = context.xDataStorageUser.data.map {
+        it[USER_TYPE].orEmpty()
     }
 
 }
