@@ -144,6 +144,7 @@ fun MainLoginView(
                                                 tokenFcm = user.deviceToken.toString()
                                             )
                                         }
+                                        loginViewModel.onLoginChange(email = "", pass = "")
                                         navigationControl.navigate(NavRoute.NavMainHome.route)
                                     } else {
                                         Toast.makeText(

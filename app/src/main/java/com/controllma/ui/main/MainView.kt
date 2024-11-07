@@ -162,6 +162,7 @@ fun MainHomeView(
                             onClick = {
                                 viewModel.onPublish(miUuid) {
                                     if (it) {
+                                        viewModel.onNewsChange(title = "", description = "")
                                         showDialogCreate = false
                                         Toast.makeText(context, "create", Toast.LENGTH_LONG).show()
                                     } else {
