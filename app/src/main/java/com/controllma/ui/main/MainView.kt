@@ -4,11 +4,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.DropdownMenu
@@ -47,9 +49,10 @@ fun MainHomeView(
             }
         }
         val newList by viewModel.newsList.collectAsState(emptyList())
+        val loading by viewModel.loading.collectAsState(false)
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
-        val (fabCreate) = createRefs()
+        val (fabCreate, pg) = createRefs()
 
         viewModel.getAllNews()
 
@@ -60,6 +63,17 @@ fun MainHomeView(
                     Toast.makeText(context, "${new.newId}", Toast.LENGTH_LONG).show()
                     Log.e("rv", "$new")
                 }
+            }
+        }
+
+        if (loading) {
+            Box(modifier = Modifier.constrainAs(pg) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+            }) {
+                CircularProgressIndicator()
             }
         }
 

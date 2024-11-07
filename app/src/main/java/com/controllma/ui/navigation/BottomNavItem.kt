@@ -1,4 +1,4 @@
-package com.controllma.ui
+package com.controllma.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
@@ -50,6 +52,7 @@ fun MainLoginView(
     val email by loginViewModel.email.collectAsState()
     val pass by loginViewModel.pass.collectAsState()
     val btnEnabled by loginViewModel.btnEnable.collectAsState()
+    val loading by loginViewModel.loading.collectAsState(false)
 
     ConstraintLayout(
         modifier = modifier
@@ -61,7 +64,7 @@ fun MainLoginView(
         val v1Guide = createGuidelineFromStart(0.1f)
         val v2Guide = createGuidelineFromEnd(0.1f)
 
-        if (loginViewModel.loading.value == true) {
+        if (loading) {
             Box(modifier = Modifier.constrainAs(pg) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
@@ -90,6 +93,9 @@ fun MainLoginView(
                     unfocusedContainerColor = Color.Transparent,
                     focusedContainerColor = Color.Transparent
                 ),
+                singleLine = true,
+                maxLines = 1,
+                keyboardActions = KeyboardActions(onDone = {}),
                 modifier = Modifier
                     .padding(top = 80.dp)
                     .constrainAs(fieldEmail) {
@@ -106,13 +112,17 @@ fun MainLoginView(
                     unfocusedContainerColor = Color.Transparent,
                     focusedContainerColor = Color.Transparent
                 ),
+                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true,
+                maxLines = 1,
+                keyboardActions = KeyboardActions(onDone = {}),
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .constrainAs(fieldPass) {
                         top.linkTo(fieldEmail.bottom)
                         end.linkTo(fieldEmail.end)
                         start.linkTo(fieldEmail.start)
-                    }
+                    },
             )
             Button(
                 onClick = {
