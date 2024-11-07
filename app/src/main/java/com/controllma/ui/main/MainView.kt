@@ -65,7 +65,7 @@ fun MainHomeView(
             }
         }
         val miUuid by produceState(initialValue = "") {
-            storageUser.getUserType().collect { uuid ->
+            storageUser.getUserUuid().collect { uuid ->
                 value = uuid
             }
         }
