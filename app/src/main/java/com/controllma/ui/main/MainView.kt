@@ -160,14 +160,22 @@ fun MainHomeView(
 
                         Button(
                             onClick = {
-                                viewModel.onPublish(miUuid) {
-                                    if (it) {
-                                        viewModel.onNewsChange(title = "", description = "")
-                                        showDialogCreate = false
-                                        Toast.makeText(context, "create", Toast.LENGTH_LONG).show()
-                                    } else {
-                                        Toast.makeText(context, "error", Toast.LENGTH_LONG).show()
+                                if (viewModel.newTitle.value.isNotEmpty() && viewModel.newDescr.value.isNotEmpty()) {
+                                    viewModel.onPublish(miUuid) {
+                                        if (it) {
+                                            viewModel.onNewsChange(title = "", description = "")
+                                            showDialogCreate = false
+                                            Toast.makeText(context, "create", Toast.LENGTH_LONG)
+                                                .show()
+                                        } else {
+                                            Toast.makeText(context, "error", Toast.LENGTH_LONG)
+                                                .show()
+                                        }
                                     }
+                                } else {
+                                    Toast.makeText(
+                                        context, "Rellena ambos campos", Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             },
                             modifier = Modifier
