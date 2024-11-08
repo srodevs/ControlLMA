@@ -2,6 +2,7 @@ package com.controllma.ui.main
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import com.controllma.R
 import com.controllma.data.model.NewResponse
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -36,12 +45,23 @@ fun ItemNew(noticeResponse: NewResponse, itemSelected: (NewResponse) -> Unit) {
                 .fillMaxWidth()
                 .padding(vertical = 4.dp, horizontal = 12.dp)
         ) {
-            /*Image(
-                painter = painterResource(id = noticeResponse.urlImage),
-                contentDescription = "avatar",
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )*/
+            if (!noticeResponse.urlImage.isNullOrEmpty()) {
+                Card(modifier = Modifier) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(noticeResponse.urlImage)
+                            .crossfade(true)
+                            .build(),
+                        placeholder = painterResource(R.drawable.ic_launcher_background),
+                        contentDescription = stringResource(R.string.all_description_img),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Black)
+                    )
+
+                }
+            }
             Text(
                 text = noticeResponse.title.toString(),
                 modifier = Modifier
