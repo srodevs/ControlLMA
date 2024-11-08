@@ -1,7 +1,6 @@
 package com.controllma.ui
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -27,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -42,14 +42,13 @@ import com.controllma.ui.navigation.NavRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     private val loginViewModel: MainViewModel by viewModels()
     private val userInf: StorageUser = StorageUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        //val manager = BiometricManager.from(currentFocus)
         setContent {
             ControlLMATheme {
                 val navigationControl = rememberNavController()
@@ -101,7 +100,7 @@ class MainActivity : ComponentActivity() {
                                 MainProfileView(
                                     navigationControl = navigationControl,
                                     viewModel = loginViewModel,
-                                    storageUser = userInf
+                                    storageUser = userInf,
                                 )
                             }
                         }

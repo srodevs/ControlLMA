@@ -64,4 +64,7 @@ class StorageUser {
         it[USER_IMG].orEmpty()
     }
 
+    fun getUserEmail() = context.xDataStorageUser.data.map {
+        it[USER_EMAIL].orEmpty()
+    }
 }
