@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
+    /*
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    */
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 }
@@ -81,19 +85,25 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material)
 
-    // Activity
-    implementation("androidx.activity:activity-ktx:1.9.0")
+    /*
+    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
+    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
+    implementation("com.google.firebase:firebase-storage-ktx:21.0.1")
+    implementation("com.google.firebase:firebase-crashlytics-ktx:19.2.1")
+    implementation("com.google.firebase:firebase-messaging-ktx:24.0.3")
+*/
+
+
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
-    // LiveData
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
     // coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     // datastore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("androidx.preference:preference-ktx:1.2.1")
-
+    // biometric Kotlin
+    implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
 
     //hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
@@ -102,8 +112,5 @@ dependencies {
     //loadImg
     implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc02")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc02")
-
-    // Kotlin
-    implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
 
 }
