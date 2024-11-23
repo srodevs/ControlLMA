@@ -1,5 +1,6 @@
 package com.controllma.data.service
 
+import androidx.compose.animation.core.snap
 import com.controllma.data.model.NewModel
 import com.controllma.data.model.NewResponse
 import com.controllma.data.model.RollCall
@@ -48,12 +49,24 @@ class FirebaseDbService @Inject constructor(
             .setValue(newResponse).isSuccessful
     }
 
-    suspend fun createRollCall(rollCall: RollCall): Boolean {
-        val currentDate = getCurrentDateWithoutTime()
-        val mKey = firebaseDatabase.getReference(TABLE_ASSISTANT).child(currentDate).push().key
-        rollCall.registerId = mKey
+    suspend fun getMyRollCall(uuId: String): Flow<List<RollCall>> {
+        return firebaseDatabase.getReference(TABLE_ASSISTANT).snapshots.map { snapshot ->
+            snapshot.children.flatMap { dateSnapshot ->
+                dateSnapshot.child(getCurrentDateWithoutTime()).child(uuId).children.mapNotNull {
+                    it.getValue(RollCall::class.java)
+                }
+            }
+        }
+    }
 
-        val existRegister = firebaseDatabase.getReference(TABLE_ASSISTANT).child(currentDate)
+    suspend fun createRollCall(rollCall: RollCall): Boolean {
+        val mKey = firebaseDatabase.getReference(TABLE_ASSISTANT).child(rollCall.uuId.toString())
+            .push().key
+        rollCall.registerId = mKey
+        rollCall.date = getCurrentDateWithoutTime()
+
+
+        val existRegister = firebaseDatabase.getReference(TABLE_ASSISTANT).child(rollCall.uuId.toString())
             .child(rollCall.uuId.toString()).get().await().exists()
 
         return if (existRegister) {

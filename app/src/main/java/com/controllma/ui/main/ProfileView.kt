@@ -12,6 +12,7 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
@@ -114,7 +117,7 @@ fun MainProfileView(
             .fillMaxSize()
             .padding(vertical = 20.dp)
     ) {
-        val (ivIconMenu, ivUser, ivFinger, ivPassword, tvUsername, topAccess, bottomAccess, boxContainer, menuContainer) = createRefs()
+        val (ivIconMenu, ivUser, ivFinger, ivPassword, tvUsername, topAccess, rvContainer, boxContainerAssistant, menuContainer) = createRefs()
 
         Icon(
             imageVector = Icons.Rounded.MoreVert,
@@ -198,7 +201,7 @@ fun MainProfileView(
         Card(modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 40.dp, vertical = 20.dp)
-            .constrainAs(boxContainer) {
+            .constrainAs(boxContainerAssistant) {
                 top.linkTo(tvUsername.bottom)
             }) {
             Column {
@@ -237,6 +240,21 @@ fun MainProfileView(
             }
         }
 
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.constrainAs(rvContainer) {
+                top.linkTo(boxContainerAssistant.bottom)
+                bottom.linkTo(parent.bottom)
+            }) {
+//            items() {
+//                ItemNew(it) { new ->
+//                    Toast.makeText(context, "${new.newId}", Toast.LENGTH_LONG).show()
+//                    Log.e("rv", "$new")
+//                }
+//            }
+        }
+        viewModel.getAllRollCall(myUuid)
+
         if (showPass) {
             ModalBottomSheet(
                 onDismissRequest = { showPass = false },
@@ -264,18 +282,24 @@ fun MainProfileView(
                 )
                 Button(
                     onClick = {
-                        viewModel.loginFromProfile(myEmail) {
-                            if (it) {
-                                viewModel.createRollCall(myUuid) { rollCall ->
-                                    if (rollCall) {
-                                        viewModel.onProfileChangePass(pass = "")
-                                        Toast.makeText(context, "exitoso", Toast.LENGTH_LONG).show()
-                                        showPass = false
+                        if (viewModel.profilePassword.value.isNotEmpty()) {
+                            viewModel.loginFromProfile(myEmail) {
+                                if (it) {
+                                    viewModel.createRollCall(myUuid) { rollCall ->
+                                        if (rollCall) {
+                                            viewModel.onProfileChangePass(pass = "")
+                                            Toast.makeText(context, "exitoso", Toast.LENGTH_LONG)
+                                                .show()
+                                            showPass = false
+                                        }
                                     }
+                                } else {
+                                    Toast.makeText(context, "error", Toast.LENGTH_LONG).show()
                                 }
-                            } else {
-                                Toast.makeText(context, "error", Toast.LENGTH_LONG).show()
                             }
+                        } else {
+                            Toast.makeText(context, "Ingresa tu contraseña", Toast.LENGTH_LONG)
+                                .show()
                         }
                     },
                     modifier = Modifier

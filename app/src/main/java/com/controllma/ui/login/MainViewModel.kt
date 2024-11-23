@@ -14,6 +14,7 @@ import com.controllma.domain.CreateNewUseCase
 import com.controllma.domain.DoLogOutUseCase
 import com.controllma.domain.DoLoginUserCase
 import com.controllma.domain.GetAllNewsUseCase
+import com.controllma.domain.GetAllRollCallUseCase
 import com.controllma.domain.GetUserUseCase
 import com.controllma.domain.RegisterRollCallUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +31,8 @@ class MainViewModel @Inject constructor(
     private val logoutUseCase: DoLogOutUseCase,
     private val getAllNewsUseCase: GetAllNewsUseCase,
     private val createNewUseCase: CreateNewUseCase,
-    private val registerRollCallUseCase: RegisterRollCallUseCase
+    private val registerRollCallUseCase: RegisterRollCallUseCase,
+    private val getAllRollCallUseCase: GetAllRollCallUseCase
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
@@ -155,6 +157,14 @@ class MainViewModel @Inject constructor(
             val res: Boolean = registerRollCallUseCase.invoke(rollCall)
             response(res)
             _loading.value = false
+        }
+    }
+
+    fun getAllRollCall(uuId: String) {
+        viewModelScope.launch {
+            getAllRollCallUseCase.invoke(uuId).collect {
+                Log.e("main", it.toString())
+            }
         }
     }
 

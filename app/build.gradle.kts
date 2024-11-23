@@ -104,6 +104,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
     // biometric Kotlin
     implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
+    /*
+    //constraint
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    //nagigation
+    implementation("androidx.navigation:navigation-compose:2.8.0")
+    */
 
     //hilt
     implementation("com.google.dagger:hilt-android:2.51.1")

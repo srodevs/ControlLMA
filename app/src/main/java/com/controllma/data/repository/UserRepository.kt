@@ -52,4 +52,8 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun getAllRollCAll(uuid: String): Flow<List<RollCall>> {
+        return firebaseDbService.getMyRollCall(uuid)
+    }
+
 }
