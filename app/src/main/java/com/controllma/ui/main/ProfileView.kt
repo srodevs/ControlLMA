@@ -21,12 +21,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -65,6 +65,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.controllma.R
 import com.controllma.core.StorageUser
+import com.controllma.ui.core.theme.Purple20
 import com.controllma.ui.login.MainViewModel
 import com.controllma.ui.navigation.NavRoute
 import kotlinx.coroutines.launch
@@ -206,7 +207,7 @@ fun MainProfileView(
             }) {
             Column {
                 Text(
-                    "Asistencia con",
+                    stringResource(R.string.profile_register_with),
                     modifier = Modifier
                         .padding(vertical = 12.dp, horizontal = 12.dp)
                 )
@@ -262,6 +263,12 @@ fun MainProfileView(
                 sheetMaxWidth = 400.dp,
             ) {
                 Text(
+                    stringResource(R.string.profile_finger_title),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
                     stringResource(R.string.profile_pass_description),
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
@@ -288,7 +295,11 @@ fun MainProfileView(
                                     viewModel.createRollCall(myUuid) { rollCall ->
                                         if (rollCall) {
                                             viewModel.onProfileChangePass(pass = "")
-                                            Toast.makeText(context, "exitoso", Toast.LENGTH_LONG)
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.profile_rollcall_success),
+                                                Toast.LENGTH_LONG
+                                            )
                                                 .show()
                                             showPass = false
                                         }
@@ -302,6 +313,12 @@ fun MainProfileView(
                                 .show()
                         }
                     },
+                    colors = ButtonColors(
+                        containerColor = Purple20,
+                        contentColor = Color.White,
+                        disabledContentColor = Color.DarkGray,
+                        disabledContainerColor = Color.LightGray
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 40.dp, bottom = 20.dp, start = 12.dp, end = 12.dp)
@@ -343,7 +360,11 @@ fun showFingerPrint(
                 ).show()
                 viewModel.createRollCall(uuId) { rollCall ->
                     if (rollCall) {
-                        Toast.makeText(context, "error", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.profile_rollcall_success),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
 

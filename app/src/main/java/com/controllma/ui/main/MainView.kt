@@ -2,15 +2,18 @@ package com.controllma.ui.main
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -36,17 +40,23 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.controllma.R
 import com.controllma.core.StorageUser
+import com.controllma.ui.core.theme.Purple20
 import com.controllma.ui.login.MainViewModel
 
 @Composable
@@ -76,12 +86,34 @@ fun MainHomeView(
         var showDialogCreate by rememberSaveable { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
-        val (fabCreate, pg) = createRefs()
+        val (fabCreate, pg, rv, toolbar) = createRefs()
 
         viewModel.getAllNews()
 
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp)
+                .constrainAs(toolbar) {
+                    top.linkTo(parent.top)
+                }) {
+            Image(
+                painter = painterResource(R.drawable.logo_lma_transparent),
+                contentDescription = "",
+                modifier = Modifier.size(36.dp)
+            )
+            Text(
+                stringResource(R.string.app_name),
+                fontStyle = FontStyle.Normal,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+        }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyColumn(modifier = Modifier.constrainAs(rv) {
+            top.linkTo(toolbar.bottom)
+        }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(newList.asReversed()) {
                 ItemNew(it) { new ->
                     Toast.makeText(context, "${new.newId}", Toast.LENGTH_LONG).show()
@@ -97,12 +129,14 @@ fun MainHomeView(
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom)
             }) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = Purple20)
             }
         }
 
         if (isAdmin) {
             FloatingActionButton(
+                contentColor = Color.White,
+                containerColor = Purple20,
                 onClick = {
                     showDialogCreate = !showDialogCreate
                 },
@@ -159,6 +193,12 @@ fun MainHomeView(
                         )
 
                         Button(
+                            colors = ButtonColors(
+                                containerColor = Purple20,
+                                contentColor = Color.White,
+                                disabledContentColor = Color.DarkGray,
+                                disabledContainerColor = Color.LightGray
+                            ),
                             onClick = {
                                 if (viewModel.newTitle.value.isNotEmpty() && viewModel.newDescr.value.isNotEmpty()) {
                                     viewModel.onPublish(miUuid) {

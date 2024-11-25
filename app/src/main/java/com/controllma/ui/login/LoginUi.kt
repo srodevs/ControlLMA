@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.navigation.NavHostController
 import com.controllma.R
 import com.controllma.core.StorageUser
 import com.controllma.data.model.TypeLoginResponse
+import com.controllma.ui.core.theme.Purple20
 import com.controllma.ui.navigation.NavRoute
 import kotlinx.coroutines.launch
 
@@ -71,7 +73,7 @@ fun MainLoginView(
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom)
             }) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = Purple20)
             }
         } else {
             Image(
@@ -149,7 +151,7 @@ fun MainLoginView(
                                     } else {
                                         Toast.makeText(
                                             context,
-                                            "Al parecer tu informacion de empleado esta incompleta",
+                                            context.getString(R.string.login_without_info_user),
                                             Toast.LENGTH_LONG
                                         ).show()
                                     }
@@ -165,6 +167,12 @@ fun MainLoginView(
                         }
                     }
                 },
+                colors = ButtonColors(
+                    containerColor = Purple20,
+                    contentColor = Color.White,
+                    disabledContentColor = Color.DarkGray,
+                    disabledContainerColor = Color.LightGray
+                ),
                 enabled = btnEnabled,
                 modifier = Modifier
                     .padding(top = 48.dp)
