@@ -1,4 +1,4 @@
-package com.controllma.ui.theme
+package com.controllma.ui.core.theme
 
 import androidx.compose.ui.graphics.Color
 

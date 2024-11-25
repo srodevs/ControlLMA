@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Control LMA</string>
+
+    <string name="all_description_img">Image</string>
+
+    <string name="login_email">Correo electronico</string>
+    <string name="login_pass">Contraseña</string>
+    <string name="login_btn_login">Ingresar</string>
+    <string name="login_login_error">Error en la Contraseña</string>
+    <string name="login_without_info_user">Al parecer tu informacion de empleado esta incompleta</string>
+
+
+    <string name="home_new_title">Titulo</string>
+    <string name="home_new_description">Descripción</string>
+    <string name="home_new_btn_send">Publicar</string>
 </resources>
