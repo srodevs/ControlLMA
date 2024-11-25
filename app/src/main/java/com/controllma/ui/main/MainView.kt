@@ -3,6 +3,7 @@ package com.controllma.ui.main
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
@@ -57,7 +59,7 @@ import androidx.navigation.NavHostController
 import com.controllma.R
 import com.controllma.core.StorageUser
 import com.controllma.ui.core.theme.Purple20
-import com.controllma.ui.login.MainViewModel
+import com.controllma.ui.items.ItemNew
 
 @Composable
 fun MainHomeView(
@@ -154,6 +156,27 @@ fun MainHomeView(
             Dialog(onDismissRequest = { showDialogCreate = false }) {
                 Card(shape = RoundedCornerShape(8)/*, elevation = 12.dp*/) {
                     Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(180.dp)
+                                .padding(top = 16.dp),
+                            shape = RoundedCornerShape(8)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.LightGray),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    imageVector = Icons.Rounded.AddCircle,
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                )
+                            }
+                        }
                         TextField(
                             value = title,
                             onValueChange = {

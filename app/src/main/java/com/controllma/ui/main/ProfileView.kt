@@ -66,7 +66,6 @@ import coil3.request.crossfade
 import com.controllma.R
 import com.controllma.core.StorageUser
 import com.controllma.ui.core.theme.Purple20
-import com.controllma.ui.login.MainViewModel
 import com.controllma.ui.navigation.NavRoute
 import kotlinx.coroutines.launch
 import java.time.Instant

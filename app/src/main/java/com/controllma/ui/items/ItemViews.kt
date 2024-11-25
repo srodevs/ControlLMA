@@ -1,4 +1,4 @@
-package com.controllma.ui.main
+package com.controllma.ui.items
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
