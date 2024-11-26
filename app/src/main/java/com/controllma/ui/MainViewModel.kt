@@ -1,4 +1,4 @@
-package com.controllma.ui.main
+package com.controllma.ui
 
 import android.util.Log
 import android.util.Patterns

@@ -35,7 +35,6 @@ import androidx.navigation.compose.rememberNavController
 import com.controllma.core.StorageUser
 import com.controllma.ui.core.theme.ControlLMATheme
 import com.controllma.ui.main.MainLoginView
-import com.controllma.ui.main.MainViewModel
 import com.controllma.ui.main.MainHomeView
 import com.controllma.ui.main.MainProfileView
 import com.controllma.ui.navigation.NavRoute
