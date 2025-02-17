@@ -1,4 +1,4 @@
-package com.controllma.ui.login
+package com.controllma.ui
 
 import android.util.Log
 import android.util.Patterns
@@ -7,12 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.controllma.data.model.LoginResponse
 import com.controllma.data.model.NewModel
 import com.controllma.data.model.NewResponse
+import com.controllma.data.model.RollCall
+import com.controllma.data.model.TypeLoginResponse
 import com.controllma.data.model.UserResponse
 import com.controllma.domain.CreateNewUseCase
 import com.controllma.domain.DoLogOutUseCase
 import com.controllma.domain.DoLoginUserCase
 import com.controllma.domain.GetAllNewsUseCase
+import com.controllma.domain.GetAllRollCallUseCase
 import com.controllma.domain.GetUserUseCase
+import com.controllma.domain.RegisterRollCallUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +30,9 @@ class MainViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val logoutUseCase: DoLogOutUseCase,
     private val getAllNewsUseCase: GetAllNewsUseCase,
-    private val createNewUseCase: CreateNewUseCase
+    private val createNewUseCase: CreateNewUseCase,
+    private val registerRollCallUseCase: RegisterRollCallUseCase,
+    private val getAllRollCallUseCase: GetAllRollCallUseCase
 ) : ViewModel() {
 
     private val _email = MutableStateFlow("")
@@ -42,6 +48,9 @@ class MainViewModel @Inject constructor(
     val newTitle = _newTitle.asStateFlow()
     private val _newDescr = MutableStateFlow("")
     val newDescr = _newDescr.asStateFlow()
+
+    private val _profilePassword = MutableStateFlow("")
+    val profilePassword = _profilePassword.asStateFlow()
 
     private var _newsList = MutableStateFlow<List<NewResponse>>(emptyList())
     val newsList: StateFlow<List<NewResponse>> = _newsList
@@ -114,6 +123,48 @@ class MainViewModel @Inject constructor(
             )
             val response = createNewUseCase.invoke(new)
             res(true)
+        }
+    }
+
+    fun onProfileChangePass(pass: String) {
+        _profilePassword.value = pass
+    }
+
+    fun loginFromProfile(email: String, responseLogin: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            _loading.value = true
+            val res: LoginResponse = loginUseCase(email, profilePassword.value)
+            when (res.loginStatus) {
+                TypeLoginResponse.Success -> {
+                    responseLogin(true)
+                }
+
+                TypeLoginResponse.Incorrect, TypeLoginResponse.Fail -> {
+                    responseLogin(false)
+                }
+            }
+            _loading.value = false
+        }
+    }
+
+    fun createRollCall(myUuid: String, response: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            _loading.value = true
+            val rollCall = RollCall(
+                uuId = myUuid,
+                timestamp = System.currentTimeMillis()
+            )
+            val res: Boolean = registerRollCallUseCase.invoke(rollCall)
+            response(res)
+            _loading.value = false
+        }
+    }
+
+    fun getAllRollCall(uuId: String) {
+        viewModelScope.launch {
+            getAllRollCallUseCase.invoke(uuId).collect {
+                Log.e("main", it.toString())
+            }
         }
     }
 

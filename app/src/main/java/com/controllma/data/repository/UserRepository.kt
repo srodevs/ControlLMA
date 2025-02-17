@@ -3,6 +3,7 @@ package com.controllma.data.repository
 import com.controllma.data.model.LoginResponse
 import com.controllma.data.model.NewModel
 import com.controllma.data.model.NewResponse
+import com.controllma.data.model.RollCall
 import com.controllma.data.model.TypeLoginResponse
 import com.controllma.data.model.UserResponse
 import com.controllma.data.service.FirebaseAuthService
@@ -41,6 +42,18 @@ class UserRepository @Inject constructor(
 
     fun createNew(newResponse: NewModel): Boolean {
         return firebaseDbService.creteNew(newResponse)
+    }
+
+    suspend fun registerRollCall(rollCall: RollCall): Boolean {
+        return try {
+            firebaseDbService.createRollCall(rollCall)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun getAllRollCAll(uuid: String): Flow<List<RollCall>> {
+        return firebaseDbService.getMyRollCall(uuid)
     }
 
 }
