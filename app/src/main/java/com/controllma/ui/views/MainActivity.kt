@@ -1,4 +1,4 @@
-package com.controllma.ui
+package com.controllma.ui.views
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -33,9 +33,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.controllma.ui.core.theme.ControlLMATheme
-import com.controllma.ui.main.MainHomeView
-import com.controllma.ui.main.MainLoginView
-import com.controllma.ui.main.MainProfileView
+import com.controllma.ui.views.main.MainHomeView
+import com.controllma.ui.views.main.MainLoginView
+import com.controllma.ui.views.main.MainProfileView
 import com.controllma.ui.navigation.NavRoute
 import dagger.hilt.android.AndroidEntryPoint
 

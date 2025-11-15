@@ -1,4 +1,4 @@
-package com.controllma.ui.main
+package com.controllma.ui.views.main
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -57,9 +57,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.controllma.R
 import com.controllma.core.showToast
-import com.controllma.ui.MainViewModel
+import com.controllma.ui.views.MainViewModel
 import com.controllma.ui.core.theme.Purple20
-import com.controllma.ui.items.ItemNew
+import com.controllma.ui.views.items.ItemNew
 import kotlinx.coroutines.flow.map
 
 @Composable
