@@ -1,10 +1,9 @@
-package com.controllma.data.service
+package com.controllma.data.network.service
 
-import androidx.compose.animation.core.snap
-import com.controllma.data.model.NewModel
-import com.controllma.data.model.NewResponse
-import com.controllma.data.model.RollCall
-import com.controllma.data.model.UserResponse
+import com.controllma.data.network.response.NewResponse
+import com.controllma.data.network.response.RollCall
+import com.controllma.data.network.response.UserResponse
+import com.controllma.domain.model.NewModel
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.snapshots
 import kotlinx.coroutines.flow.Flow
@@ -17,64 +16,73 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-private const val TAG = "firebaseDbService"
-
 class FirebaseDbService @Inject constructor(
     private val firebaseDatabase: FirebaseDatabase
 ) {
 
     companion object {
+        private const val TAG = "firebaseDbService"
         const val TABLE_USER = "user"
         const val TABLE_NEWS = "news"
         const val TABLE_ASSISTANT = "roll_call"
     }
 
     suspend fun getUserInf(uuid: String): UserResponse? {
-        return firebaseDatabase.getReference(TABLE_USER).child(uuid)
+        return firebaseDatabase.getReference(TABLE_USER)
+            .child(uuid)
             .get().await().getValue(UserResponse::class.java)
     }
 
     fun getAllNews(): Flow<List<NewResponse>> {
-        return firebaseDatabase.getReference(TABLE_NEWS).snapshots.map { snap ->
-            snap.children.mapNotNull {
-                it.getValue(NewResponse::class.java)
+        return firebaseDatabase.getReference(TABLE_NEWS)
+            .snapshots.map { snap ->
+                snap.children.mapNotNull {
+                    it.getValue(NewResponse::class.java)
+                }
             }
-        }
     }
 
     fun creteNew(newResponse: NewModel): Boolean {
         val mId = firebaseDatabase.getReference(TABLE_NEWS).push().key.toString()
         newResponse.newId = mId
-        return firebaseDatabase.getReference(TABLE_NEWS).child(mId)
+        return firebaseDatabase.getReference(TABLE_NEWS)
+            .child(mId)
             .setValue(newResponse).isSuccessful
     }
 
     suspend fun getMyRollCall(uuId: String): Flow<List<RollCall>> {
         return firebaseDatabase.getReference(TABLE_ASSISTANT).snapshots.map { snapshot ->
             snapshot.children.flatMap { dateSnapshot ->
-                dateSnapshot.child(getCurrentDateWithoutTime()).child(uuId).children.mapNotNull {
-                    it.getValue(RollCall::class.java)
-                }
+                dateSnapshot
+                    .child(getCurrentDateWithoutTime())
+                    .child(uuId).children.mapNotNull {
+                        it.getValue(RollCall::class.java)
+                    }
             }
         }
     }
 
     suspend fun createRollCall(rollCall: RollCall): Boolean {
-        val mKey = firebaseDatabase.getReference(TABLE_ASSISTANT).child(rollCall.uuId.toString())
-            .push().key
+        val mKey = firebaseDatabase.getReference(TABLE_ASSISTANT)
+            .child(rollCall.uuId.toString()).push().key
         rollCall.registerId = mKey
         rollCall.date = getCurrentDateWithoutTime()
 
 
-        val existRegister = firebaseDatabase.getReference(TABLE_ASSISTANT).child(rollCall.uuId.toString())
-            .child(rollCall.uuId.toString()).get().await().exists()
+        val existRegister =
+            firebaseDatabase.getReference(TABLE_ASSISTANT)
+                .child(rollCall.uuId.toString())
+                .child(rollCall.uuId.toString())
+                .get().await().exists()
 
         return if (existRegister) {
             true
         } else {
             suspendCancellableCoroutine { cancelable ->
-                firebaseDatabase.getReference(TABLE_ASSISTANT).child(getCurrentDateWithoutTime())
-                    .child(rollCall.uuId.toString()).setValue(rollCall)
+                firebaseDatabase.getReference(TABLE_ASSISTANT)
+                    .child(getCurrentDateWithoutTime())
+                    .child(rollCall.uuId.toString())
+                    .setValue(rollCall)
                     .addOnCompleteListener {
                         cancelable.resume(it.isSuccessful)
                     }

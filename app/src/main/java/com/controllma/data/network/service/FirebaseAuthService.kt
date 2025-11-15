@@ -1,4 +1,4 @@
-package com.controllma.data.service
+package com.controllma.data.network.service
 
 import android.content.Context
 import android.util.Log
@@ -7,14 +7,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-
-private const val TAG = "firebaseAuth"
 
 class FirebaseAuthService @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     @ApplicationContext private val context: Context
 ) {
+    companion object {
+        private const val TAG = "firebaseAuth"
+    }
 
     suspend fun loginUser(
         email: String,
@@ -31,8 +31,6 @@ class FirebaseAuthService @Inject constructor(
                     """.trimIndent()
                     )
                     continuation.resume(it.isSuccessful)
-                }.addOnFailureListener {
-                    continuation.resumeWithException(it)
                 }
         }
     }

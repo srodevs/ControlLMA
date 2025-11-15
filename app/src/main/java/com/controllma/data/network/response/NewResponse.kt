@@ -1,4 +1,4 @@
-package com.controllma.data.model
+package com.controllma.data.network.response
 
 data class NewResponse(
     var newId: String?,
@@ -10,12 +10,3 @@ data class NewResponse(
 ) {
     constructor() : this(null, null, null, null, null, null)
 }
-
-data class NewModel(
-    var newId: String?,
-    var title: String?,
-    var description: String?,
-    var publisher: String?,
-    var timestamp: Long?,
-    var urlImage: String?
-)

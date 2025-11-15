@@ -6,7 +6,6 @@ import android.content.Intent
 import android.hardware.biometrics.BiometricManager
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
@@ -41,7 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -59,12 +57,14 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.controllma.R
-import com.controllma.core.StorageUser
+import com.controllma.core.TypeLoginResponse
+import com.controllma.core.showToast
 import com.controllma.ui.MainViewModel
 import com.controllma.ui.core.theme.Purple20
 import com.controllma.ui.navigation.NavRoute
@@ -80,29 +80,13 @@ import java.util.TimeZone
 @Composable
 fun MainProfileView(
     navigationControl: NavHostController,
-    viewModel: MainViewModel,
-    storageUser: StorageUser,
+    viewModel: MainViewModel = hiltViewModel()
 ) {
-    val myImgUrl by produceState(initialValue = "https://images.pexels.com/photos/29095597/pexels-photo-29095597/free-photo-of-misteriosa-figura-encapuchada-en-el-humo.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1") {
-        storageUser.getUserImage().collect { miUrl ->
-            value = miUrl
-        }
-    }
-    val myName by produceState(initialValue = "") {
-        storageUser.getUsername().collect { miName ->
-            value = miName
-        }
-    }
-    val myEmail by produceState(initialValue = "") {
-        storageUser.getUserEmail().collect { email ->
-            value = email
-        }
-    }
-    val myUuid by produceState(initialValue = "") {
-        storageUser.getUserUuid().collect { uuid ->
-            value = uuid
-        }
-    }
+    val myImgUrl by viewModel.getUserImage()
+        .collectAsState(initial = "https://images.pexels.com/photos/29095597/pexels-photo-29095597/free-photo-of-misteriosa-figura-encapuchada-en-el-humo.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")
+    val myName by viewModel.getUsername().collectAsState(initial = "")
+    val myEmail by viewModel.getUserEmail().collectAsState(initial = "")
+    val myUuid by viewModel.getUserUuid().collectAsState(initial = "")
     val mPassword by viewModel.profilePassword.collectAsState()
     val scope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }
@@ -147,7 +131,7 @@ fun MainProfileView(
                     viewModel.logOut {
                         if (it) {
                             scope.launch {
-                                storageUser.saveLoginBool(false)
+                                viewModel.saveLoginBool(false)
                                 navigationControl.navigate(NavRoute.NavLogin.route)
                             }
                         }
@@ -199,12 +183,13 @@ fun MainProfileView(
                 }
         )
 
-        Card(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 40.dp, vertical = 20.dp)
-            .constrainAs(boxContainerAssistant) {
-                top.linkTo(tvUsername.bottom)
-            }) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 40.dp, vertical = 20.dp)
+                .constrainAs(boxContainerAssistant) {
+                    top.linkTo(tvUsername.bottom)
+                }) {
             Column {
                 Text(
                     stringResource(R.string.profile_register_with),
@@ -291,26 +276,28 @@ fun MainProfileView(
                     onClick = {
                         if (viewModel.profilePassword.value.isNotEmpty()) {
                             viewModel.loginFromProfile(myEmail) {
-                                if (it) {
-                                    viewModel.createRollCall(myUuid) { rollCall ->
-                                        if (rollCall) {
-                                            viewModel.onProfileChangePass(pass = "")
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.profile_rollcall_success),
-                                                Toast.LENGTH_LONG
-                                            )
-                                                .show()
-                                            showPass = false
+                                when (it.loginStatus) {
+                                    TypeLoginResponse.Success -> {
+                                        viewModel.createRollCall(myUuid) { rollCall ->
+                                            if (rollCall) {
+                                                viewModel.onProfileChangePass(pass = "")
+                                                context.showToast(context.getString(R.string.profile_rollcall_success))
+                                                showPass = false
+                                            }
                                         }
                                     }
-                                } else {
-                                    Toast.makeText(context, "error", Toast.LENGTH_LONG).show()
+
+                                    TypeLoginResponse.Incorrect -> {
+                                        context.showToast("verifica tus datos")
+                                    }
+
+                                    TypeLoginResponse.Fail -> {
+                                        context.showToast("error")
+                                    }
                                 }
                             }
                         } else {
-                            Toast.makeText(context, "Ingresa tu contraseña", Toast.LENGTH_LONG)
-                                .show()
+                            context.showToast("Ingresa tu contraseña")
                         }
                     },
                     colors = ButtonColors(
@@ -346,25 +333,17 @@ fun showFingerPrint(
                 errString: CharSequence
             ) {
                 super.onAuthenticationError(errorCode, errString)
-                Toast.makeText(
-                    context, "Authentication error: $errString", Toast.LENGTH_SHORT
-                ).show()
+                context.showToast("Authentication error: $errString")
             }
 
             override fun onAuthenticationSucceeded(
                 result: BiometricPrompt.AuthenticationResult
             ) {
                 super.onAuthenticationSucceeded(result)
-                Toast.makeText(
-                    context, "Authentication succeeded!", Toast.LENGTH_SHORT
-                ).show()
+                context.showToast("Authentication succeeded!")
                 viewModel.createRollCall(uuId) { rollCall ->
                     if (rollCall) {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.profile_rollcall_success),
-                            Toast.LENGTH_LONG
-                        ).show()
+                        context.showToast(context.getString(R.string.profile_rollcall_success))
                     }
                 }
 
@@ -372,10 +351,7 @@ fun showFingerPrint(
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                Toast.makeText(
-                    context, "Authentication failed",
-                    Toast.LENGTH_SHORT
-                ).show()
+                context.showToast("Authentication failed")
             }
         })
 

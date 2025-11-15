@@ -1,7 +1,6 @@
 package com.controllma.ui.main
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -55,33 +53,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.controllma.R
-import com.controllma.core.StorageUser
+import com.controllma.core.showToast
 import com.controllma.ui.MainViewModel
 import com.controllma.ui.core.theme.Purple20
 import com.controllma.ui.items.ItemNew
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun MainHomeView(
     navigationControl: NavHostController,
-    viewModel: MainViewModel,
-    storageUser: StorageUser
+    viewModel: MainViewModel = hiltViewModel()
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val isAdmin by produceState(initialValue = false) {
-            storageUser.getUserType().collect { userType ->
-                value = userType == "admin"
-            }
-        }
-        val miUuid by produceState(initialValue = "") {
-            storageUser.getUserUuid().collect { uuid ->
-                value = uuid
-            }
-        }
+        val isAdmin by viewModel
+            .getUserType()
+            .map { it == "admin" }
+            .collectAsState(initial = false)
+        val miUuid by viewModel.getUserUuid().collectAsState(initial = "")
         val newList by viewModel.newsList.collectAsState(emptyList())
         val loading by viewModel.loading.collectAsState(false)
         val title by viewModel.newTitle.collectAsState()
@@ -93,7 +87,8 @@ fun MainHomeView(
 
         viewModel.getAllNews()
 
-        Row(verticalAlignment = Alignment.CenterVertically,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 12.dp)
@@ -119,7 +114,7 @@ fun MainHomeView(
         }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(newList.asReversed()) {
                 ItemNew(it) { new ->
-                    Toast.makeText(context, "${new.newId}", Toast.LENGTH_LONG).show()
+                    context.showToast(new.newId.toString())
                     Log.e("rv", "$new")
                 }
             }
@@ -229,17 +224,13 @@ fun MainHomeView(
                                         if (it) {
                                             viewModel.onNewsChange(title = "", description = "")
                                             showDialogCreate = false
-                                            Toast.makeText(context, "create", Toast.LENGTH_LONG)
-                                                .show()
+                                            context.showToast("create")
                                         } else {
-                                            Toast.makeText(context, "error", Toast.LENGTH_LONG)
-                                                .show()
+                                            context.showToast("error")
                                         }
                                     }
                                 } else {
-                                    Toast.makeText(
-                                        context, "Rellena ambos campos", Toast.LENGTH_LONG
-                                    ).show()
+                                    context.showToast("Rellena ambos campos")
                                 }
                             },
                             modifier = Modifier

@@ -1,7 +1,6 @@
 package com.controllma.ui.main
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -30,10 +29,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.controllma.R
-import com.controllma.core.StorageUser
-import com.controllma.data.model.TypeLoginResponse
+import com.controllma.core.TypeLoginResponse
+import com.controllma.core.showToast
 import com.controllma.ui.MainViewModel
 import com.controllma.ui.core.theme.Purple20
 import com.controllma.ui.navigation.NavRoute
@@ -44,18 +44,17 @@ const val TAG_MAIN_VM = "mainVm"
 @Composable
 fun MainLoginView(
     modifier: Modifier = Modifier,
-    loginViewModel: MainViewModel,
     navigationControl: NavHostController,
-    userStorageInf: StorageUser
+    viewModel: MainViewModel = hiltViewModel()
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val email by loginViewModel.email.collectAsState()
-    val pass by loginViewModel.pass.collectAsState()
-    val btnEnabled by loginViewModel.btnEnable.collectAsState()
-    val loading by loginViewModel.loading.collectAsState(false)
+    val email by viewModel.email.collectAsState()
+    val pass by viewModel.pass.collectAsState()
+    val btnEnabled by viewModel.btnEnable.collectAsState()
+    val loading by viewModel.loading.collectAsState(false)
 
     ConstraintLayout(
         modifier = modifier
@@ -90,7 +89,7 @@ fun MainLoginView(
             )
             TextField(
                 value = email,
-                onValueChange = { loginViewModel.onLoginChange(it, pass) },
+                onValueChange = { viewModel.onLoginChange(it, pass) },
                 label = { Text(text = stringResource(id = R.string.login_email)) },
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = Color.Transparent,
@@ -109,7 +108,7 @@ fun MainLoginView(
             )
             TextField(
                 value = pass,
-                onValueChange = { loginViewModel.onLoginChange(email, it) },
+                onValueChange = { viewModel.onLoginChange(email, it) },
                 label = { Text(text = stringResource(id = R.string.login_pass)) },
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = Color.Transparent,
@@ -129,16 +128,16 @@ fun MainLoginView(
             )
             Button(
                 onClick = {
-                    loginViewModel.onLoginSelected {
+                    viewModel.onLoginSelected {
                         when (it.loginStatus) {
                             TypeLoginResponse.Success -> {
                                 Log.d(TAG_MAIN_VM, "debe de cambiar de pantalla")
-                                loginViewModel.getUserInf { user ->
+                                viewModel.getUserInf { user ->
                                     Log.e(TAG_MAIN_VM, "mi response user es -> $user")
                                     if (user != null) {
                                         scope.launch {
-                                            userStorageInf.saveLoginBool(true)
-                                            userStorageInf.saveUserInfo(
+                                            viewModel.saveLoginBool(true)
+                                            viewModel.saveUserInfo(
                                                 uuid = user.uuid.toString(),
                                                 email = user.email.toString(),
                                                 username = user.username.toString(),
@@ -147,20 +146,17 @@ fun MainLoginView(
                                                 tokenFcm = user.deviceToken.toString()
                                             )
                                         }
-                                        loginViewModel.onLoginChange(email = "", pass = "")
+                                        viewModel.onLoginChange(email = "", pass = "")
                                         navigationControl.navigate(NavRoute.NavMainHome.route)
                                     } else {
-                                        Toast.makeText(
-                                            context,
-                                            context.getString(R.string.login_without_info_user),
-                                            Toast.LENGTH_LONG
-                                        ).show()
+                                        context.showToast(context.getString(R.string.login_without_info_user))
                                     }
                                 }
                             }
 
                             TypeLoginResponse.Incorrect, TypeLoginResponse.Fail -> {
                                 Log.d(TAG_MAIN_VM, "a salido un error ")
+                                context.showToast("revisa tus credenciales por favor", true)
                                 scope.launch {
                                     snackBarHostState.showSnackbar("Error: ${it.loginStatus}")
                                 }

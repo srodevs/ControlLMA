@@ -23,7 +23,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.controllma.R
-import com.controllma.data.model.NewResponse
+import com.controllma.data.network.response.NewResponse
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

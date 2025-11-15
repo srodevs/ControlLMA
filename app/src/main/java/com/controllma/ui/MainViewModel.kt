@@ -4,20 +4,21 @@ import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.controllma.data.model.LoginResponse
-import com.controllma.data.model.NewModel
-import com.controllma.data.model.NewResponse
-import com.controllma.data.model.RollCall
-import com.controllma.data.model.TypeLoginResponse
-import com.controllma.data.model.UserResponse
-import com.controllma.domain.CreateNewUseCase
-import com.controllma.domain.DoLogOutUseCase
-import com.controllma.domain.DoLoginUserCase
-import com.controllma.domain.GetAllNewsUseCase
-import com.controllma.domain.GetAllRollCallUseCase
-import com.controllma.domain.GetUserUseCase
-import com.controllma.domain.RegisterRollCallUseCase
+import com.controllma.core.StorageUser
+import com.controllma.data.network.response.NewResponse
+import com.controllma.data.network.response.RollCall
+import com.controllma.data.network.response.UserResponse
+import com.controllma.domain.model.LoginResultModel
+import com.controllma.domain.model.NewModel
+import com.controllma.domain.usecases.CreateNewUseCase
+import com.controllma.domain.usecases.DoLogOutUseCase
+import com.controllma.domain.usecases.DoLoginUserCase
+import com.controllma.domain.usecases.GetAllNewsUseCase
+import com.controllma.domain.usecases.GetAllRollCallUseCase
+import com.controllma.domain.usecases.GetUserUseCase
+import com.controllma.domain.usecases.RegisterRollCallUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val storageUser: StorageUser,
     private val loginUseCase: DoLoginUserCase,
     private val getUserUseCase: GetUserUseCase,
     private val logoutUseCase: DoLogOutUseCase,
@@ -61,7 +63,7 @@ class MainViewModel @Inject constructor(
         _btnEnable.value = enableLogin(email, pass)
     }
 
-    fun onLoginSelected(responseLogin: (LoginResponse) -> Unit) {
+    fun onLoginSelected(responseLogin: (LoginResultModel) -> Unit) {
         viewModelScope.launch {
             _loading.value = true
             val res = loginUseCase(email.value, pass.value)
@@ -122,7 +124,7 @@ class MainViewModel @Inject constructor(
                 publisher = uuId
             )
             val response = createNewUseCase.invoke(new)
-            res(true)
+            res(response)
         }
     }
 
@@ -130,19 +132,11 @@ class MainViewModel @Inject constructor(
         _profilePassword.value = pass
     }
 
-    fun loginFromProfile(email: String, responseLogin: (Boolean) -> Unit) {
+    fun loginFromProfile(email: String, responseLogin: (LoginResultModel) -> Unit) {
         viewModelScope.launch {
             _loading.value = true
-            val res: LoginResponse = loginUseCase(email, profilePassword.value)
-            when (res.loginStatus) {
-                TypeLoginResponse.Success -> {
-                    responseLogin(true)
-                }
-
-                TypeLoginResponse.Incorrect, TypeLoginResponse.Fail -> {
-                    responseLogin(false)
-                }
-            }
+            val res: LoginResultModel = loginUseCase(email, profilePassword.value)
+            responseLogin(res)
             _loading.value = false
         }
     }
@@ -167,5 +161,40 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun storageIsLoggedIn() = storageUser.getLogin()
+    fun saveLoginBool(bool: Boolean) {
+        viewModelScope.launch {
+            storageUser.saveLoginBool(bool)
+        }
+    }
+
+    fun saveUserInfo(
+        uuid: String,
+        email: String,
+        username: String,
+        userType: String,
+        userImage: String,
+        tokenFcm: String
+    ) {
+        viewModelScope.launch {
+            storageUser.saveUserInfo(
+                uuid,
+                email,
+                username,
+                userType,
+                userImage,
+                tokenFcm
+            )
+        }
+    }
+
+    fun getUserType(): Flow<String> = storageUser.getUserType()
+    fun getUserUuid() = storageUser.getUserUuid()
+    fun getUserImage() = storageUser.getUserImage()
+    fun getUsername() = storageUser.getUsername()
+    fun getUserEmail() = storageUser.getUserEmail()
+
+
 
 }

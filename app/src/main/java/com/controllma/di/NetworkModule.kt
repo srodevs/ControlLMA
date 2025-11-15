@@ -1,4 +1,4 @@
-package com.controllma.data
+package com.controllma.di
 
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-
 
 @Module
 @InstallIn(SingletonComponent::class)

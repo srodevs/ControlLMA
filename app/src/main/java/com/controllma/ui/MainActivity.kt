@@ -32,18 +32,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.controllma.core.StorageUser
 import com.controllma.ui.core.theme.ControlLMATheme
-import com.controllma.ui.main.MainLoginView
 import com.controllma.ui.main.MainHomeView
+import com.controllma.ui.main.MainLoginView
 import com.controllma.ui.main.MainProfileView
 import com.controllma.ui.navigation.NavRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
-    private val loginViewModel: MainViewModel by viewModels()
-    private val userInf: StorageUser = StorageUser()
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +49,8 @@ class MainActivity : FragmentActivity() {
         setContent {
             ControlLMATheme {
                 val navigationControl = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize(),
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         val currentRoute =
                             navigationControl.currentBackStackEntryAsState().value?.destination?.route
@@ -63,7 +62,7 @@ class MainActivity : FragmentActivity() {
                     }) { innerPadding ->
 
                     val startDestination by produceState(initialValue = NavRoute.NavLogin.route) {
-                        userInf.getLogin().collect { isLoggedIn ->
+                        mainViewModel.storageIsLoggedIn().collect { isLoggedIn ->
                             value = if (isLoggedIn) {
                                 NavRoute.NavMainHome.route
                             } else {
@@ -83,23 +82,17 @@ class MainActivity : FragmentActivity() {
                             composable(NavRoute.NavLogin.route) {
                                 MainLoginView(
                                     modifier = Modifier.padding(innerPadding),
-                                    loginViewModel = loginViewModel,
                                     navigationControl = navigationControl,
-                                    userStorageInf = userInf
                                 )
                             }
                             composable(NavRoute.NavMainHome.route) {
                                 MainHomeView(
                                     navigationControl = navigationControl,
-                                    viewModel = loginViewModel,
-                                    storageUser = userInf
                                 )
                             }
                             composable(NavRoute.NavMainProfile.route) {
                                 MainProfileView(
                                     navigationControl = navigationControl,
-                                    viewModel = loginViewModel,
-                                    storageUser = userInf,
                                 )
                             }
                         }

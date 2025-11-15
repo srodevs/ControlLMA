@@ -1,4 +1,4 @@
-package com.controllma.data.model
+package com.controllma.data.network.response
 
 data class RollCall(
     var registerId: String? = null,
