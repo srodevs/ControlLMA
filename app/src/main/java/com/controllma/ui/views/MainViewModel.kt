@@ -80,7 +80,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun enableLogin(email: String, pass: String) =
-        Patterns.EMAIL_ADDRESS.matcher(email).matches() && pass.length > 8
+        Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$").matches(email) && pass.length > 8
 
     fun getUserInf(userModel: (UserResponse?) -> Unit) {
         viewModelScope.launch {
@@ -194,7 +194,6 @@ class MainViewModel @Inject constructor(
     fun getUserImage() = storageUser.getUserImage()
     fun getUsername() = storageUser.getUsername()
     fun getUserEmail() = storageUser.getUserEmail()
-
 
 
 }

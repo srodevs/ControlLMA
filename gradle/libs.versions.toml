@@ -27,6 +27,9 @@ lifecycle = "2.8.3"
 biometric = "1.4.0-alpha02"
 coilVersion = "3.0.0-rc02"
 hiltNavigation = "1.2.0"
+testCoroutinas = "1.8.0"
+mockk = "1.13.13"
+turbine = "0.12.1"
 
 [libraries]
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
@@ -62,6 +65,10 @@ android-hilt-kapt = { group = "com.google.dagger", name = "hilt-compiler", versi
 hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigation" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilVersion" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coilVersion" }
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "testCoroutinas" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
