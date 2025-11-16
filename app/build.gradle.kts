@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
+    alias(libs.plugins.google.hilt.android)
     id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -26,7 +26,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -63,13 +64,31 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.viewmodel)
+    implementation(libs.android.coroutines)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.lifecycle)
+    implementation(libs.androidx.biometric)
+
+    // - - - - firebase -- google
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.config)
+    implementation(libs.android.hilt)
+    kapt(libs.android.hilt.kapt)
+    implementation(libs.hilt.navigation)
+
+    // - - - - test
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -77,33 +96,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.androidx.constraintlayout.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.material)
-
-    // Activity
-    implementation("androidx.activity:activity-ktx:1.9.0")
-    // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
-    // LiveData
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
-    // coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-    // datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
-    implementation("androidx.preference:preference-ktx:1.2.1")
-
-
-    //hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-compiler:2.51.1")
-
     //loadImg
-    implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc02")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc02")
-
-    // Kotlin
-    implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
 
 }

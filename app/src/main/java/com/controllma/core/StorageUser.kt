@@ -1,12 +1,14 @@
 package com.controllma.core
 
+import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.controllma.ControlLMAApp
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class StorageUser {
+class StorageUser @Inject constructor(@ApplicationContext mContext: Context) {
 
     companion object {
         val USER_LOGIN = booleanPreferencesKey("userIsLogin")
@@ -18,7 +20,7 @@ class StorageUser {
         private val USER_FCM_TOKEN = stringPreferencesKey("deviceToken")
     }
 
-    private val context = ControlLMAApp.mAppContext
+    private val context = mContext
 
     suspend fun saveUserInfo(
         uuid: String,
@@ -56,4 +58,15 @@ class StorageUser {
         it[USER_UUID].orEmpty()
     }
 
+    fun getUsername() = context.xDataStorageUser.data.map {
+        it[USER_NAME].orEmpty()
+    }
+
+    fun getUserImage() = context.xDataStorageUser.data.map {
+        it[USER_IMG].orEmpty()
+    }
+
+    fun getUserEmail() = context.xDataStorageUser.data.map {
+        it[USER_EMAIL].orEmpty()
+    }
 }

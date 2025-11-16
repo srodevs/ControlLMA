@@ -3,14 +3,22 @@
 
     <string name="all_description_img">Image</string>
 
-    <string name="login_email">Correo electronico</string>
+    <string name="login_email">Correo electrónico</string>
     <string name="login_pass">Contraseña</string>
     <string name="login_btn_login">Ingresar</string>
     <string name="login_login_error">Error en la Contraseña</string>
-    <string name="login_without_info_user">Al parecer tu informacion de empleado esta incompleta</string>
+    <string name="login_without_info_user">Al parecer tu informacion esta incompleta\nComunicate con tu administrador</string>
 
 
     <string name="home_new_title">Titulo</string>
     <string name="home_new_description">Descripción</string>
     <string name="home_new_btn_send">Publicar</string>
+
+    <string name="profile_pass_description">Ingresa la contraseña de tu cuenta</string>
+    <string name="profile_pass_btn_send">Confirmar</string>
+    <string name="profile_pass_put_pass_hint">Contraseña</string>
+    <string name="profile_finger_title">Registra tu asistencia</string>
+    <string name="profile_rollcall_success">Registro exitoso</string>
+    <string name="profile_register_with">Asistencia con</string>
+    <string name="profile_finger_description">Coloca tu huella para registrar tu asistencia</string>
 </resources>
